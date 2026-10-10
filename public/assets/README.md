@@ -1,0 +1,1 @@
+Place the original teacher photograph here as teacher-portrait.jpg. The app detects it automatically. The photograph is drawn proportionally in each template, without cropping, retouching, or filters. Alternatively, choose the original photograph through “Add teacher portrait” in the application.
