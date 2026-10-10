@@ -8,7 +8,7 @@ import '@fontsource/dm-sans/500.css';
 import '@fontsource/dm-sans/600.css';
 import './style.css';
 import { loadFonts, paginate, sample, templates } from './renderer';
-import { drawStory } from './art';
+import { drawStory, loadStoryAssets } from './art';
 import type { StoryPage, Template } from './renderer';
 
 function Story({ template, page, index, count, phone, portrait, thumbnail = false }: {template: Template; page: StoryPage; index: number; count: number; phone: boolean; portrait?: HTMLImageElement; thumbnail?: boolean}) {
@@ -18,7 +18,7 @@ function Story({ template, page, index, count, phone, portrait, thumbnail = fals
 }
 function App() {
   const [text, setText] = useState('');
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(8);
   const [ready, setReady] = useState(false);
   const [phone, setPhone] = useState(true);
   const [portrait, setPortrait] = useState<HTMLImageElement>();
@@ -26,7 +26,7 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState('');
-  useEffect(() => { loadFonts().then(() => setReady(true)).catch(() => setError('Fonts could not load. Please refresh and try again.')); const image = new Image(); image.onload = () => setPortrait(image); image.src = `${import.meta.env.BASE_URL}assets/teacher-portrait.jpg`; }, []);
+  useEffect(() => { Promise.all([loadFonts(), loadStoryAssets()]).then(() => setReady(true)).catch(() => setError('Fonts could not load. Please refresh and try again.')); const image = new Image(); image.onload = () => setPortrait(image); image.src = `${import.meta.env.BASE_URL}assets/teacher-portrait.jpg`; }, []);
   const pages = ready ? paginate(text.trim() || sample, !!(showPortrait && portrait)) : [];
   const current = Math.min(pageIndex, pages.length - 1);
   const activePortrait = showPortrait ? portrait : undefined;
@@ -65,7 +65,7 @@ function App() {
           <div className="section-title"><span className="step">01</span><h2>Paste your feedback</h2><span className="hint">Arabic or English</span></div>
           <textarea aria-label="Feedback" dir="auto" value={text} onChange={e => { setText(e.target.value); setPageIndex(0); }} placeholder={'الصقي كلماتهم الجميلة هنا…\nPaste their kind words here…'} />
           <div className="textarea-footer"><button className="text-button" onClick={() => { setText(sample); setPageIndex(0); }}>Try an example <ArrowRight size={13}/></button><span>{text.length.toLocaleString()} characters</span></div>
-          <div className="section-title templates-title"><span className="step">02</span><h2>Choose a feeling</h2><span className="hint">8 curated designs</span></div>
+          <div className="section-title templates-title"><span className="step">02</span><h2>Choose a feeling</h2><span className="hint">{templates.length} curated designs</span></div>
           <div className="template-grid">{templates.map((template, i) => <button key={template.id} className={`template-option ${selected === i ? 'selected' : ''}`} onClick={() => { setSelected(i); setPageIndex(0); }} aria-pressed={selected === i} aria-label={template.name}>
             <div className="mini-card" style={{background: template.bg}}>{ready && <Story template={template} page={paginate(sample, !!activePortrait)[0]} index={0} count={1} phone={phone} portrait={activePortrait} thumbnail/>}{selected === i && <span className="selected-badge"><Check size={11}/></span>}</div><strong>{template.name}</strong><span>{template.mood}</span>
           </button>)}</div>

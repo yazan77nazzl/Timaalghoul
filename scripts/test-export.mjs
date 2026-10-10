@@ -13,7 +13,7 @@ try {
   const arabic = 'شكراً مس تيماء على الشرح الواضح والمميز. ابنتي أصبحت تحب الرياضيات، وثقتها بنفسها تحسنت كثيراً. نقدر صبرك واهتمامك بكل طالبة. علامتها ٩٨٪ في امتحان Mathematics 2026 🤍';
   await page.getByRole('textbox', { name: 'Feedback' }).fill(arabic);
   await page.waitForTimeout(100);
-  for (const name of ['Ivory & Ink', 'Emerald Atelier', 'Rose Reverie', 'Midnight Muse', 'The Editorial', 'Terra Notes', 'Lilac Letter', 'Noir Signature']) {
+  for (const name of ['Ivory & Ink', 'Emerald Atelier', 'Rose Reverie', 'Midnight Muse', 'The Editorial', 'Terra Notes', 'Lilac Letter', 'Noir Signature', 'Golden Study', 'Golden Editorial', 'Golden Legacy']) {
     await page.getByRole('button', { name, exact: true }).click();
     await page.waitForTimeout(80);
     const preview = await page.locator('canvas.story').evaluate(canvas => canvas.toDataURL('image/png').split(',')[1]);
@@ -78,5 +78,5 @@ try {
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
   assert.deepEqual(errors, []);
-  console.log('PASS: eight Arabic PNGs equal the live preview byte for byte; 1080×1920; fonts loaded; long text and graphemes preserved; English and portrait export; page navigation; mobile layout.');
+  console.log('PASS: eleven Arabic PNGs equal the live preview byte for byte; 1080×1920; fonts loaded; long text and graphemes preserved; English and portrait export; page navigation; mobile layout.');
 } finally { await browser.close(); }

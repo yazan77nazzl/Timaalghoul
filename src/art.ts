@@ -1,6 +1,15 @@
 import type { StoryPage, Template } from './renderer';
 
 type Context = CanvasRenderingContext2D;
+let studyBackground: HTMLImageElement | undefined;
+export async function loadStoryAssets() {
+  const image = new Image();
+  await new Promise<void>(resolve => {
+    image.onload = () => { studyBackground = image; resolve(); };
+    image.onerror = () => resolve();
+    image.src = `${import.meta.env.BASE_URL}assets/golden-study-background.png`;
+  });
+}
 function rect(c: Context, x: number, y: number, w: number, h: number, color: string, radius = 0) { c.fillStyle = color; c.beginPath(); c.roundRect(x, y, w, h, radius); c.fill(); }
 function stroke(c: Context, x: number, y: number, w: number, h: number, color: string, radius = 0) { c.strokeStyle = color; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, w, h, radius); c.stroke(); }
 function rule(c: Context, x: number, y: number, x2: number, y2: number, color: string) { c.strokeStyle = color; c.lineWidth = 1.5; c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke(); }
@@ -30,6 +39,10 @@ export function drawStory(canvas: HTMLCanvasElement, t: Template, page: StoryPag
   const c = canvas.getContext('2d')!;
   const { id, bg, ink, accent } = t;
   rect(c,0,0,1080,1920,bg);
+  if (id.startsWith('golden-')) {
+    drawGoldenStory(c, t, page, index, count, phone, portrait);
+    return;
+  }
   let textInk: string = ink;
   let textTop = 840;
   const area = 760;
@@ -116,4 +129,53 @@ export function drawStory(canvas: HTMLCanvasElement, t: Template, page: StoryPag
   type(c,'MATHEMATICS TEACHER',540,1804,18,id==='terracotta'?'#9c7052':accent,false,'center',true);
   if(phone)type(c,'0537859118',540,1852,23,id==='terracotta'?'#653d31':ink,false);
   if(count>1)type(c,`${index+1} / ${count}`,975,1889,16,accent,false,'right');
+}
+
+function drawGoldenStory(c: Context, t: Template, page: StoryPage, index: number, count: number, phone: boolean, portrait?: HTMLImageElement) {
+  if (studyBackground) {
+    const scale = Math.max(1080 / studyBackground.naturalWidth, 1920 / studyBackground.naturalHeight);
+    const w = studyBackground.naturalWidth * scale, h = studyBackground.naturalHeight * scale;
+    c.drawImage(studyBackground, (1080-w)/2, (1920-h)/2, w, h);
+  }
+  const reversed = t.id === 'golden-editorial';
+  const centered = t.id === 'golden-legacy';
+  c.save();
+  if (reversed) { c.translate(1080, 0); c.scale(-1, 1); }
+  const shade = c.createLinearGradient(0,0,720,0);
+  shade.addColorStop(0,'#08151bf5'); shade.addColorStop(.72,'#08151bf5'); shade.addColorStop(1,'#08151b00');
+  c.fillStyle=shade;c.beginPath();c.moveTo(0,0);c.lineTo(632,0);c.bezierCurveTo(435,300,439,575,564,797);c.lineTo(0,875);c.closePath();c.fill();
+  c.strokeStyle=gold(c,400,0,220,800);c.lineWidth=5;c.beginPath();c.moveTo(632,0);c.bezierCurveTo(435,300,439,575,564,797);c.stroke();
+  c.restore();
+  const x = reversed ? 820 : 260;
+  if(centered) {
+    rect(c,45,45,990,110,'#0b1820bb',15);
+    type(c,'TIMAA AL GHOUL',540,116,77,'#edc990');
+    photo(c,portrait,327,176,426,501,'#eac593','#c79a5c');
+    type(c,'MATHEMATICS TEACHER',540,716,23,'#fff0dc',false,'center',true);
+    rule(c,431,751,649,751,'#d9b274');
+  } else {
+    leaf(c,x-14,111,54,'#d9b274',.8);leaf(c,x+15,111,46,'#d9b274',1.5);
+    type(c,'TIMAA',x,265,112,'#edc990');type(c,'AL GHOUL',x,360,78,'#edc990');
+    type(c,'MATHEMATICS',x,425,22,'#f7eddf',false,'center',true);type(c,'TEACHER',x,462,22,'#f7eddf',false,'center',true);
+    rule(c,x-92,504,x+92,504,'#d9b274');
+    type(c,'More than',x,589,59,'#e4bb80');type(c,'just math.',x,657,71,'#e4bb80');
+    photo(c,portrait,reversed?50:572,99,455,644,'#eac593','#d1aa73');
+  }
+  c.save();c.shadowColor='#00000070';c.shadowBlur=35;c.shadowOffsetY=22;
+  c.fillStyle=gold(c,78,781,924,900);c.beginPath();c.roundRect(78,781,924,924,100);c.fill();c.restore();
+  const ivory=c.createLinearGradient(85,790,980,1680);ivory.addColorStop(0,'#fff4df');ivory.addColorStop(.45,'#f3e5d2');ivory.addColorStop(1,'#dfc4a1');
+  c.fillStyle=ivory;c.beginPath();c.roundRect(84,787,912,912,95);c.fill();
+  stroke(c,91,794,898,898,'#fff7e3',87);
+  type(c,'“',174,901,152,'#a77a3b');type(c,'PARENT & STUDENT FEEDBACK',573,858,31,'#382d20');
+  rule(c,505,892,635,892,'#a77a3b');
+  // Keep the same measured text width and capacity as every other template.
+  const spacing=page.size*1.72;const start=914+(760-page.lines.length*spacing)/2;
+  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#201e1a';
+  page.lines.forEach((text,i)=>c.fillText(text,540,start+spacing*(i+.5)));
+  // Edge foliage stays outside the feedback's measured column.
+  leaf(c,1010,1460,91,'#bf9e68',.65);leaf(c,1040,1533,100,'#bf9e68',-.25);
+  rect(c,333,1727,676,165,'#0c181ce8',20);
+  if(phone){type(c,'☎',401,1786,39,'#deb87c',false);type(c,'0537859118',679,1788,55,'#edc990');}
+  type(c,'EVERY STUDENT',670,1839,17,'#f3eada',false,'center',true);type(c,'HAS A BRIGHTER FUTURE',670,1872,17,'#f3eada',false,'center',true);
+  if(count>1)type(c,`${index+1} / ${count}`,979,1910,16,'#e1c291',false,'right');
 }

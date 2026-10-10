@@ -10,6 +10,9 @@ export const templates = [
   { id: 'terracotta', name: 'Terra Notes', mood: 'Warm earth, sculptural shapes', bg: '#ae5744', ink: '#fff4e2', accent: '#e6b38b' },
   { id: 'lilac', name: 'Lilac Letter', mood: 'A delicate personal keepsake', bg: '#e9e4f0', ink: '#4e4561', accent: '#9383ac' },
   { id: 'noir', name: 'Noir Signature', mood: 'Black velvet, champagne gold', bg: '#22211f', ink: '#f1e4cb', accent: '#b69b6b' },
+  { id: 'golden-study', name: 'Golden Study', mood: 'Cinematic portrait, ivory & gold', bg: '#101b20', ink: '#efcea0', accent: '#d4ae73' },
+  { id: 'golden-editorial', name: 'Golden Editorial', mood: 'Portrait-led, polished brass', bg: '#121b20', ink: '#efcea0', accent: '#d4ae73' },
+  { id: 'golden-legacy', name: 'Golden Legacy', mood: 'A luminous signature keepsake', bg: '#17201f', ink: '#efcea0', accent: '#d4ae73' },
 ] as const;
 export type Template = typeof templates[number];
 export type StoryPage = { lines: string[]; size: number; rtl: boolean };

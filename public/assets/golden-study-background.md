@@ -1,0 +1,7 @@
+# Golden Study background
+
+Asset: `golden-study-background.png`. Generated with the built-in image generation tool. This is only a study background: the app draws editable text and composites the user's original photograph separately. No generated person is used.
+
+Final generation prompt:
+
+Use case: ads-marketing. Asset type: photorealistic portrait 9:16 background plate for a luxury mathematics teacher feedback Story. Generate a premium cinematic photograph of a sophisticated dark mathematics study: black/navy chalkboard with subtle softly blurred gold mathematical symbols and geometry on the upper right, warm amber light, pale veined marble desktop along the bottom 15 percent, stack of three elegant black leather books with thin gold edging in the bottom left, gold mesh pencil holder and black/gold pens at the far bottom right, restrained olive foliage along the far left and right margins. Upper left is very dark nearly black empty negative space for brand typography. Upper right is an empty softly illuminated classroom region reserved for compositing an original teacher portrait later. Center from 40 to 78 percent vertical is a dark quiet empty region reserved for a large editable feedback card. Materials: black leather, polished brass, warm marble. Rich luminous warm gold highlights and deep cinematic shadows, premium advertising photograph, no people, no faces, no portrait, no typography, no letters or book titles, no feedback card, no logos, no watermark. The complete image is only a background. Portrait 9:16 composition.
