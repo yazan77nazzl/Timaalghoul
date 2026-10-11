@@ -27,6 +27,8 @@ npm test
 
 Tests use installed Google Chrome through Playwright. The browser checks validate Arabic and English PNG downloads, exact canvas/export equality, all twenty-three templates, multi-page preservation and downloads, portrait rendering, full-frame sizing for large and small images, unobscured left artwork, and mobile layout. Test artifacts are written to the ignored `test-results` directory.
 
+On browsers that support PNG file sharing, **Save / share image** opens the device share sheet with the current Story. On iPhone, choose **Save Image** to save to Photos. Multi-page feedback can be saved one Story at a time using the preview arrows; Download PNG still exports every page. Sharing needs HTTPS (or localhost) and browser support; unsupported browsers keep the normal download button. Images are prepared before the tap to preserve user activation. Run `node scripts/test-share.mjs` to verify shared PNG equality, activation, page changes, cancellation, and fallback with a mocked share API in Chrome. The actual iPhone share sheet requires device testing.
+
 Run `node scripts/test-alignment.mjs` for pixel-based centering checks using Arabic, English, mixed text, punctuation, and emoji. Feedback uses measured widths and left anchors to avoid reliance on Canvas center alignment. WebKit documented a center-alignment issue with complex-shaped text in its [Safari Technology Preview 246 release notes](https://webkit.org/blog/18128/release-notes-for-safari-technology-preview-246/). The application requires no Windows components. This check uses installed Chrome; direct testing on an iPhone remains separate.
 
 

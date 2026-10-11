@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowDownToLine, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Sparkles } from 'lucide-react';
+import { ArrowDownToLine, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Share2, Sparkles } from 'lucide-react';
 import '@fontsource/amiri/400.css';
 import '@fontsource/cormorant-garamond/500.css';
 import '@fontsource/dm-sans/400.css';
@@ -26,11 +26,38 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const [canShareImages] = useState(() => {
+    try { return window.isSecureContext && !!navigator.share && !!navigator.canShare?.({ files: [new File([''], 'story.png', { type: 'image/png' })] }); }
+    catch { return false; }
+  });
   useEffect(() => { Promise.all([loadFonts(), loadStoryAssets()]).then(() => setReady(true)).catch(() => setError('Fonts could not load. Please refresh and try again.')); const image = new Image(); image.onload = () => setPortrait(image); image.src = `${import.meta.env.BASE_URL}assets/teacher-portrait.jpg`; }, []);
   const pages = useMemo(() => ready ? paginate(text.trim() || sample) : [], [ready, text]);
   const thumbnailPage = useMemo(() => ready ? paginate(sample)[0] : undefined, [ready]);
   const current = Math.min(pageIndex, pages.length - 1);
   const activePortrait = showPortrait ? portrait : undefined;
+  const shareSource = useMemo(() => ({ pages, current, selected, phone, portrait: activePortrait }), [pages, current, selected, phone, activePortrait]);
+  const [preparedShare, setPreparedShare] = useState<{ source: typeof shareSource; file: File }>();
+  useEffect(() => {
+    if (!canShareImages || !ready || !text.trim()) return;
+    let cancelled = false;
+    // Prepare before the tap so the native share sheet retains user activation.
+    const canvas = document.querySelector<HTMLCanvasElement>('canvas.story');
+    canvas?.toBlob(blob => {
+      if (!cancelled && blob) setPreparedShare({ source: shareSource, file: new File([blob], `Timaa-Al-Ghoul-${templates[selected].id}${pages.length > 1 ? `-${current + 1}` : ''}.png`, { type: 'image/png' }) });
+    }, 'image/png');
+    return () => { cancelled = true; };
+  }, [canShareImages, ready, text, shareSource]);
+  async function shareImage() {
+    if (!preparedShare || preparedShare.source !== shareSource || sharing) return;
+    setSharing(true); setError('');
+    try {
+      // Call directly from the click; no asynchronous work before navigator.share.
+      await navigator.share({ files: [preparedShare.file] });
+    } catch (cause) {
+      if (!(cause instanceof DOMException && cause.name === 'AbortError')) setError('Could not open sharing. Please try again or use Download PNG.');
+    } finally { setSharing(false); }
+  }
   async function download() {
     if (!ready || !text.trim()) return;
     setDownloading(true); setError('');
@@ -71,7 +98,8 @@ function App() {
             <div className="mini-card" style={{background: template.bg}}>{thumbnailPage && <Story template={template} page={thumbnailPage} index={0} count={1} phone={phone} portrait={activePortrait} thumbnail/>}{selected === i && <span className="selected-badge"><Check size={11}/></span>}</div><strong>{template.name}</strong><span>{template.mood}</span>
           </button>)}</div>
           <div className="options"><label><input type="checkbox" checked={phone} onChange={e => setPhone(e.target.checked)}/> Include phone number</label>{portrait ? <label><input type="checkbox" checked={showPortrait} onChange={e => setShowPortrait(e.target.checked)}/> Include portrait</label> : <label className="portrait-upload"><ImagePlus size={15}/> Add teacher portrait<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => choosePortrait(e.target.files?.[0])}/></label>}</div>
-          <button className="download-button" onClick={download} disabled={!ready || !text.trim() || downloading}><ArrowDownToLine size={18}/>{downloading ? 'Preparing your stories…' : pages.length > 1 ? `Download ${pages.length} PNG images` : 'Download PNG'}<ArrowRight size={17}/></button>
+          {canShareImages && <><button className="download-button share-button" onClick={shareImage} disabled={!text.trim() || preparedShare?.source !== shareSource || sharing || downloading}><Share2 size={18}/>{sharing ? 'Opening sharing…' : pages.length > 1 ? `Save / share Story ${current + 1}` : 'Save / share image'}<ArrowRight size={17}/></button><p className="save-note">On iPhone, choose “Save Image” to save to Photos.{pages.length > 1 && ' Save each Story using the preview arrows.'}</p></>}
+          <button className={`download-button ${canShareImages ? 'secondary-download' : ''}`} onClick={download} disabled={!ready || !text.trim() || downloading || sharing}><ArrowDownToLine size={18}/>{downloading ? 'Preparing your stories…' : pages.length > 1 ? `Download ${pages.length} PNG images` : 'Download PNG'}<ArrowRight size={17}/></button>
           <div className="export-note">1080 × 1920 px <span>·</span> Full-quality PNG <span>·</span> Ready for Instagram</div>
           {pages.length > 1 && <p className="pagination-note">Your feedback continues across {pages.length} Stories. All text is included. Your browser may ask to allow multiple downloads.</p>}
           {error && <p role="alert" className="error">{error}</p>}
