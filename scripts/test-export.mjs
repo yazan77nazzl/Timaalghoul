@@ -14,7 +14,7 @@ try {
   await page.getByRole('textbox', { name: 'Feedback' }).fill(arabic);
   await page.waitForTimeout(100);
   const names = await page.evaluate(async () => (await import('/src/renderer.ts')).templates.map(t => t.name));
-  assert.equal(names.length, 18);
+  assert.equal(names.length, 23);
   for (const name of names) {
     await page.getByRole('button', { name, exact: true }).click();
     await page.waitForTimeout(80);
@@ -75,6 +75,48 @@ try {
   await (await portraitDownload).saveAs('test-results/portrait-layout.png');
   const portraitPreview = await page.locator('canvas.story').evaluate(canvas => canvas.toDataURL('image/png').split(',')[1]);
   assert.equal((await readFile('test-results/portrait-layout.png')).toString('base64'), portraitPreview);
+  // Adding a portrait must leave the new templates' left artwork unobscured.
+  for (const name of names.slice(-5)) {
+    await page.getByRole('button', { name, exact: true }).click();
+    await page.waitForTimeout(80);
+    await page.locator('canvas.story').evaluate(c => { globalThis.__leftPixels = c.getContext('2d').getImageData(0, 0, 525, 810).data; });
+    await page.getByRole('checkbox', { name: 'Include portrait' }).uncheck();
+    await page.waitForTimeout(80);
+    const changed = await page.locator('canvas.story').evaluate(c => {
+      const pixels = c.getContext('2d').getImageData(0, 0, 525, 810).data;
+      let changed = 0;
+      for (let i = 0; i < pixels.length; i++) if (Math.abs(globalThis.__leftPixels[i] - pixels[i]) > 3) changed++;
+      delete globalThis.__leftPixels;
+      return changed;
+    });
+    assert.equal(changed, 0, `${name}: portrait obscures the left artwork`);
+    await page.getByRole('checkbox', { name: 'Include portrait' }).check();
+    await page.waitForTimeout(80);
+    const bitmap = await page.locator('canvas.story').evaluate(c => c.toDataURL('image/png').split(',')[1]);
+    const pending = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download PNG', exact: true }).click();
+    const d = await pending;
+    const path = `test-results/portrait-${d.suggestedFilename()}`;
+    await d.saveAs(path);
+    assert.equal((await readFile(path)).toString('base64'), bitmap);
+  }
+  const coverResults = await page.evaluate(async () => {
+    const { drawPortraitCover } = await import('/src/portrait.ts');
+    const results = [];
+    for (const [width, height] of [[8, 4], [4, 16], [1200, 800]]) {
+      const source = document.createElement('canvas'); source.width = width; source.height = height;
+      const src = source.getContext('2d'); src.fillStyle = '#ed4567'; src.fillRect(0, 0, width, height);
+      const image = new Image(); image.src = source.toDataURL(); await image.decode();
+      const target = document.createElement('canvas'); target.width = 100; target.height = 160;
+      const ctx = target.getContext('2d'); drawPortraitCover(ctx, image, 0, 0, 100, 160);
+      const pixels = ctx.getImageData(0, 0, 100, 160).data;
+      let full = true;
+      for (let i = 3; i < pixels.length; i += 4) if (pixels[i] !== 255) full = false;
+      results.push(full && image.naturalWidth === width && image.naturalHeight === height);
+    }
+    return results;
+  });
+  assert(coverResults.every(Boolean), 'Large, small, tall, and wide portraits must fill the entire frame');
   await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));

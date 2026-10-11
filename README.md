@@ -13,9 +13,9 @@ Open the local URL printed by Vite. On Windows with restricted PowerShell execut
 
 ## Use
 
-Paste Arabic or English feedback, select one of eighteen designs, and download a 1080 × 1920 PNG. All eleven earlier designs are retained. Seven additional luxury designs offer natural marble and gold, burgundy velvet, warm champagne, sapphire art deco, a private gallery composition, a mathematics design with golden equations and geometric details, and Mathematics Privé with photorealistic brass instruments. Each supports the original portrait without cropping or retouching. Long feedback is split into numbered Stories with no omitted text. The preview displays the exact canvas used for PNG export. Fonts ship locally with the application; feedback and selected photographs stay in the browser. Some browsers require permission to download multiple files.
+Paste Arabic or English feedback, select one of twenty-three designs, and download a 1080 × 1920 PNG. All eleven earlier designs are retained. Seven additional luxury designs offer natural marble and gold, burgundy velvet, warm champagne, sapphire art deco, a private gallery composition, a mathematics design with golden equations and geometric details, and Mathematics Privé with photorealistic brass instruments. Five further designs keep all decorative artwork on the left and the uploaded portrait on the right. Portraits fill their frames proportionally; edges are cropped when needed, with no stretching, recoloring, or retouching. Long feedback is split into numbered Stories with no omitted text. The preview displays the exact canvas used for PNG export. Fonts ship locally with the application; feedback and selected photographs stay in the browser. Some browsers require permission to download multiple files.
 
-Add the original photograph at `public/assets/teacher-portrait.jpg` to include it automatically. The interface also accepts a local portrait. Photos keep their original proportions and are not cropped, recolored, or retouched.
+Add the original photograph at `public/assets/teacher-portrait.jpg` to include it automatically. The interface also accepts a local portrait. Photos fill the entire frame using proportional cover sizing. Larger or smaller images are scaled to fit, with centered edge cropping when aspect ratios differ. Source photographs remain unchanged.
 
 ## Verification
 
@@ -25,6 +25,7 @@ npm run dev
 npm test
 ```
 
-Tests use installed Google Chrome through Playwright. The browser checks validate Arabic and English PNG downloads, exact canvas/export equality, all eighteen templates, multi-page preservation and downloads, portrait rendering, and mobile layout. Test artifacts are written to the ignored `test-results` directory.
+Tests use installed Google Chrome through Playwright. The browser checks validate Arabic and English PNG downloads, exact canvas/export equality, all twenty-three templates, multi-page preservation and downloads, portrait rendering, full-frame sizing for large and small images, unobscured left artwork, and mobile layout. Test artifacts are written to the ignored `test-results` directory.
+
 
 

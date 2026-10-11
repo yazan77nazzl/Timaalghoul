@@ -1,5 +1,6 @@
 import type { StoryPage, Template } from './renderer';
 import { drawPremium, loadPremiumAssets } from './premium';
+import { drawPortraitCover } from './portrait';
 
 type Context = CanvasRenderingContext2D;
 let studyBackground: HTMLImageElement | undefined;
@@ -22,12 +23,10 @@ function leaf(c: Context, x: number, y: number, size: number, color: string, rot
 function botanical(c: Context, x: number, y: number, color: string, flip = false) { c.save(); c.translate(x,y); if(flip)c.scale(-1,1); rule(c,0,0,110,-420,color); for(let i=0;i<6;i++){leaf(c,i*18,-i*68,84,color,-.9);leaf(c,i*18+5,-i*68-25,75,color,.6);} c.restore(); }
 function photo(c: Context, image: HTMLImageElement | undefined, x: number, y: number, w: number, h: number, ink: string, accent: string, radius = 0) {
   if (image) {
-    // The full original photograph is fitted proportionally; no crop, mask, or filter.
-    const scale = Math.min((w-16)/image.naturalWidth,(h-16)/image.naturalHeight);
-    const iw = image.naturalWidth*scale, ih = image.naturalHeight*scale;
     c.save(); c.shadowColor = '#00000025'; c.shadowBlur = 28; c.shadowOffsetY = 14;
-    rect(c,x+(w-iw)/2-8,y+(h-ih)/2-8,iw+16,ih+16,'#fffaf0'); c.restore();
-    c.drawImage(image,x+(w-iw)/2,y+(h-ih)/2,iw,ih);
+    rect(c,x-4,y-4,w+8,h+8,accent,radius); c.restore();
+    c.save();c.beginPath();c.roundRect(x,y,w,h,radius);c.clip();
+    drawPortraitCover(c,image,x,y,w,h);c.restore();
   } else {
     stroke(c,x,y,w,h,accent,radius);
     type(c,'T',x+w/2,y+h/2+65,210,ink);

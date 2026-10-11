@@ -1,4 +1,5 @@
 import type { StoryPage, Template } from './renderer';
+import { drawPortraitCover } from './portrait';
 
 type C = CanvasRenderingContext2D;
 let marble: HTMLImageElement | undefined;
@@ -23,7 +24,7 @@ function text(c:C,s:string,x:number,y:number,size:number,color:string,serif=true
 function gradient(c:C,a:string,b:string,x=0,y=0,w=1080,h=1920){const g=c.createLinearGradient(x,y,w,h);g.addColorStop(0,a);g.addColorStop(1,b);return g;}
 function portrait(c:C,p:HTMLImageElement|undefined,x:number,y:number,w:number,h:number,accent:string){
   frame(c,x-10,y-10,w+20,h+20,accent,3);
-  if(p){const scale=Math.min(w/p.naturalWidth,h/p.naturalHeight);const iw=p.naturalWidth*scale,ih=p.naturalHeight*scale;c.save();c.shadowColor='#00000040';c.shadowBlur=30;c.shadowOffsetY=12;c.drawImage(p,x+(w-iw)/2,y+(h-ih)/2,iw,ih);c.restore();}
+  if(p){c.save();c.shadowColor='#00000040';c.shadowBlur=30;c.shadowOffsetY=12;drawPortraitCover(c,p,x,y,w,h);c.restore();}
   else{frame(c,x+14,y+14,w-28,h-28,accent);text(c,'T',x+w/2,y+h*.59,Math.min(w*.48,190),accent);text(c,'AL GHOUL',x+w/2,y+h*.74,18,accent,false,'center',4);line(c,x+w*.32,y+h*.82,x+w*.68,y+h*.82,accent);}
 }
 function stone(c:C,opacity=1){if(!marble)return;c.save();c.globalAlpha=opacity;const scale=Math.max(1080/marble.naturalWidth,1920/marble.naturalHeight);const w=marble.naturalWidth*scale,h=marble.naturalHeight*scale;c.drawImage(marble,(1080-w)/2,(1920-h)/2,w,h);c.restore();}
@@ -31,6 +32,10 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
   const {id,ink,accent}=t;
   let bodyInk:string=ink;let top=866;let footerInk:string=ink;
   box(c,0,0,1080,1920,t.bg);
+  if(id.startsWith('premium-left-')){
+    drawLeftCollection(c,t,page,index,count,phone,p);
+    return;
+  }
   if(id==='premium-math-signature'){
     drawSignature(c,page,index,count,phone,p);
     return;
@@ -140,4 +145,66 @@ function drawSignature(c:C,page:StoryPage,index:number,count:number,phone:boolea
   if(phone){box(c,357,1750,665,122,'#101918e8',22);frame(c,357,1750,665,122,'#91774c',22);text(c,'☎',419,1831,42,'#dbb57c',false);text(c,'0537859118',690,1833,62,'#f0ce93');}
   text(c,'EVERY STUDENT HAS A BRIGHTER FUTURE',665,1905,13,'#f1e2c9',false,'center',2);
   if(count>1)text(c,`${index+1} / ${count}`,115,1892,16,'#f1d7aa',false,'left');
+}
+
+function ellipse(c:C,x:number,y:number,rx:number,ry:number,color:string,rotation=0){c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.ellipse(x,y,rx,ry,rotation,0,Math.PI*2);c.stroke();}
+function engravedLeaf(c:C,x:number,y:number,rotation:number,color:string){c.save();c.translate(x,y);c.rotate(rotation);c.strokeStyle=color;c.lineWidth=1.5;c.beginPath();c.moveTo(0,0);c.bezierCurveTo(-24,-20,-15,-53,0,-65);c.bezierCurveTo(22,-37,20,-14,0,0);c.stroke();line(c,0,0,0,-60,color);c.restore();}
+
+function drawLeftCollection(c:C,t:Template,page:StoryPage,index:number,count:number,phone:boolean,p?:HTMLImageElement){
+  const {id,ink,accent}=t;
+  let bodyInk:string=ink;
+  const bodyTop=887;
+  // All five compositions reserve x=600..1020 for the complete original portrait.
+  // Mathematical artwork and ornament remain entirely in the left column.
+  box(c,0,0,1080,1920,gradient(c,t.bg,'#081312'));stone(c,.12);
+  box(c,563,78,463,676,gradient(c,'#ffffff08','#00000026',563,78,1026,754),30);
+  text(c,'TIMAA',99,187,106,ink,true,'left');text(c,'AL GHOUL',102,271,75,ink,true,'left');
+  text(c,'MATHEMATICS TEACHER',104,327,16,accent,false,'left',2.5);
+  if(id==='premium-left-orbit'){
+    frame(c,48,48,984,1824,'#806b4c');
+    const cx=298,cy=558;
+    ellipse(c,cx,cy,159,159,accent);ellipse(c,cx,cy,157,63,'#e4c58d',-.45);ellipse(c,cx,cy,58,157,'#b58b50',-.45);
+    ellipse(c,cx,cy,17,17,accent);line(c,126,636,468,478,'#a58a5b');
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;line(c,cx+150*Math.cos(a),cy+150*Math.sin(a),cx+159*Math.cos(a),cy+159*Math.sin(a),accent);}
+    text(c,'THE BEAUTY OF MATHEMATICS',298,768,13,accent,false,'center',2);
+    box(c,82,844,916,824,'#0c191bf5',30);frame(c,82,844,916,824,accent,30);frame(c,97,859,886,794,'#665b46',22);
+  }else if(id==='premium-left-opera'){
+    box(c,0,0,548,794,gradient(c,'#6b304460','#6b304400'));
+    const cx=291,cy=690,r=247;
+    c.strokeStyle=accent;c.beginPath();c.arc(cx,cy,r,Math.PI,Math.PI*2);c.stroke();
+    for(let i=0;i<=16;i++){const a=Math.PI+i*Math.PI/16;line(c,cx,cy,cx+r*Math.cos(a),cy+r*Math.sin(a),i%2? '#94624f':accent);}
+    ellipse(c,cx,cy,22,22,accent);text(c,'Words of gratitude.',292,788,53,ink);
+    box(c,82,850,916,818,gradient(c,'#f5dfd0','#d0a391',82,850,998,1668),[85,85,15,15]);frame(c,99,867,882,784,'#ffead8',[68,68,8,8]);bodyInk='#4a2733';
+  }else if(id==='premium-left-blueprint'){
+    c.save();c.globalAlpha=.15;for(let x=92;x<531;x+=35)line(c,x,401,x,738,accent);for(let y=401;y<738;y+=35)line(c,92,y,518,y,accent);c.restore();
+    const ax=143,ay=659,bx=455,by=659,tx=143,ty=446;
+    line(c,ax,ay,bx,by,accent);line(c,bx,by,tx,ty,accent);line(c,tx,ty,ax,ay,accent);
+    line(c,143,641,161,641,accent);line(c,161,641,161,659,accent);
+    ellipse(c,298.5,552.5,Math.hypot(156,106.5),Math.hypot(156,106.5),'#839998');
+    text(c,'a',121,553,26,accent);text(c,'b',298,690,26,accent);text(c,'c',321,534,26,accent);
+    text(c,'a² + b² = c²',298,777,42,ink);
+    box(c,82,850,916,818,'#112b3ef5',5);frame(c,82,850,916,818,accent,5);frame(c,101,869,878,780,'#748482',2);
+  }else if(id==='premium-left-parchment'){
+    c.save();c.translate(293,552);c.rotate(-.055);c.shadowColor='#00000040';c.shadowBlur=22;box(c,-196,-174,392,345,gradient(c,'#e9d9bd','#ba9f7b'),6);c.shadowBlur=0;frame(c,-183,-161,366,319,'#8e7356',3);
+    text(c,'THE SCHOLAR’S NOTES',0,-111,13,'#614b34',false,'center',2);
+    text(c,'π',0,-8,95,'#705332');text(c,'x² + y² = r²',0,63,32,'#59442f');line(c,-100,91,100,91,'#9b805d');text(c,'An infinite possibility.',0,127,25,'#59442f');c.restore();
+    text(c,'A lesson. A lasting impact.',300,791,37,ink);
+    box(c,82,850,916,818,gradient(c,'#f4e7d4','#dfc5a3',82,850,998,1668),16);frame(c,101,869,878,780,'#b2946d',8);bodyInk='#3e3024';
+  }else{
+    const cx=296,cy=557;
+    ellipse(c,cx,cy,118,118,'#7c865b');
+    for(let i=0;i<8;i++){const a=Math.PI*.58+i*.14;engravedLeaf(c,cx+164*Math.cos(a),cy+164*Math.sin(a),a+Math.PI/2,accent);const b=-Math.PI*.58-i*.14;engravedLeaf(c,cx+164*Math.cos(b),cy+164*Math.sin(b),b+Math.PI/2,accent);}
+    text(c,'∞',cx,592,90,ink);text(c,'GROWING BRIGHTER MINDS',cx,773,13,accent,false,'center',2);
+    box(c,82,850,916,818,'#e8e3cf',36);frame(c,82,850,916,818,accent,36);frame(c,100,868,880,782,'#b1ad8b',25);bodyInk='#1f3c30';
+  }
+    // Portrait fills its reserved column; left artwork remains unobscured.
+  portrait(c,p,620,140,354,556,accent);
+  text(c,'PARENT & STUDENT FEEDBACK',796,789,16,accent,false,'center',1);
+  const spacing=page.size*1.72;const start=bodyTop+(760-page.lines.length*spacing)/2;
+  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle=bodyInk;
+  page.lines.forEach((s,i)=>c.fillText(s,540,start+spacing*(i+.5)));
+  line(c,451,1710,629,1710,accent);text(c,'Timaa Al Ghoul',540,1780,67,ink);
+  text(c,'MATHEMATICS TEACHER',540,1825,18,accent,false,'center',4);
+  if(phone)text(c,'0537859118',540,1859,23,ink,false);
+  if(count>1)text(c,`${index+1} / ${count}`,964,1902,16,accent,false,'right');
 }

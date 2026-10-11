@@ -20,6 +20,11 @@ export const templates = [
   { id: 'premium-gallery', name: 'The Private Gallery', mood: 'Architectural, quietly refined', bg: '#26312c', ink: '#f0e5d2', accent: '#baaa86' },
   { id: 'premium-mathematics', name: 'Mathematics Atelier', mood: 'Golden equations, geometric elegance', bg: '#0b292a', ink: '#f4e7c9', accent: '#d2ae70' },
   { id: 'premium-math-signature', name: 'Mathematics Privé', mood: 'Sculptural brass, cinematic luxury', bg: '#111615', ink: '#f3d8ab', accent: '#d0a66b' },
+  { id: 'premium-left-orbit', name: 'The Golden Orbit', mood: 'Brass geometry, charcoal velvet', bg: '#131a1c', ink: '#f1ddbb', accent: '#d0aa70' },
+  { id: 'premium-left-opera', name: 'Opera Rouge', mood: 'Wine silk, an antique golden fan', bg: '#3e1726', ink: '#f6ded0', accent: '#cf9e83' },
+  { id: 'premium-left-blueprint', name: 'Sapphire Blueprint', mood: 'Fine geometry, midnight sapphire', bg: '#102b41', ink: '#e7e8de', accent: '#cfb17b' },
+  { id: 'premium-left-parchment', name: 'The Scholar’s Letter', mood: 'Espresso, parchment & copper', bg: '#33261f', ink: '#f2dfc6', accent: '#c3a17c' },
+  { id: 'premium-left-laurel', name: 'Laurel Signature', mood: 'Forest green, an engraved wreath', bg: '#102f27', ink: '#f1e5cc', accent: '#c1ad73' },
 ] as const;
 export type Template = typeof templates[number];
 export type StoryPage = { lines: string[]; size: number; rtl: boolean };
