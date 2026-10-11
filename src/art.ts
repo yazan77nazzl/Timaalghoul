@@ -1,4 +1,5 @@
 import type { StoryPage, Template } from './renderer';
+import { drawPremium, loadPremiumAssets } from './premium';
 
 type Context = CanvasRenderingContext2D;
 let studyBackground: HTMLImageElement | undefined;
@@ -9,6 +10,7 @@ export async function loadStoryAssets() {
     image.onerror = () => resolve();
     image.src = `${import.meta.env.BASE_URL}assets/golden-study-background.png`;
   });
+  await loadPremiumAssets();
 }
 function rect(c: Context, x: number, y: number, w: number, h: number, color: string, radius = 0) { c.fillStyle = color; c.beginPath(); c.roundRect(x, y, w, h, radius); c.fill(); }
 function stroke(c: Context, x: number, y: number, w: number, h: number, color: string, radius = 0) { c.strokeStyle = color; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, w, h, radius); c.stroke(); }
@@ -39,6 +41,10 @@ export function drawStory(canvas: HTMLCanvasElement, t: Template, page: StoryPag
   const c = canvas.getContext('2d')!;
   const { id, bg, ink, accent } = t;
   rect(c,0,0,1080,1920,bg);
+  if (id.startsWith('premium-')) {
+    drawPremium(c, t, page, index, count, phone, portrait);
+    return;
+  }
   if (id.startsWith('golden-')) {
     drawGoldenStory(c, t, page, index, count, phone, portrait);
     return;

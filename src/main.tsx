@@ -18,7 +18,7 @@ function Story({ template, page, index, count, phone, portrait, thumbnail = fals
 }
 function App() {
   const [text, setText] = useState('');
-  const [selected, setSelected] = useState(8);
+  const [selected, setSelected] = useState(11);
   const [ready, setReady] = useState(false);
   const [phone, setPhone] = useState(true);
   const [portrait, setPortrait] = useState<HTMLImageElement>();
