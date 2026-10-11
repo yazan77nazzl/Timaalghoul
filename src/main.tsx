@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowDownToLine, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Sparkles } from 'lucide-react';
 import '@fontsource/amiri/400.css';
@@ -18,7 +18,7 @@ function Story({ template, page, index, count, phone, portrait, thumbnail = fals
 }
 function App() {
   const [text, setText] = useState('');
-  const [selected, setSelected] = useState(11);
+  const [selected, setSelected] = useState(16);
   const [ready, setReady] = useState(false);
   const [phone, setPhone] = useState(true);
   const [portrait, setPortrait] = useState<HTMLImageElement>();
@@ -27,7 +27,8 @@ function App() {
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => { Promise.all([loadFonts(), loadStoryAssets()]).then(() => setReady(true)).catch(() => setError('Fonts could not load. Please refresh and try again.')); const image = new Image(); image.onload = () => setPortrait(image); image.src = `${import.meta.env.BASE_URL}assets/teacher-portrait.jpg`; }, []);
-  const pages = ready ? paginate(text.trim() || sample, !!(showPortrait && portrait)) : [];
+  const pages = useMemo(() => ready ? paginate(text.trim() || sample) : [], [ready, text]);
+  const thumbnailPage = useMemo(() => ready ? paginate(sample)[0] : undefined, [ready]);
   const current = Math.min(pageIndex, pages.length - 1);
   const activePortrait = showPortrait ? portrait : undefined;
   async function download() {
@@ -67,7 +68,7 @@ function App() {
           <div className="textarea-footer"><button className="text-button" onClick={() => { setText(sample); setPageIndex(0); }}>Try an example <ArrowRight size={13}/></button><span>{text.length.toLocaleString()} characters</span></div>
           <div className="section-title templates-title"><span className="step">02</span><h2>Choose a feeling</h2><span className="hint">{templates.length} curated designs</span></div>
           <div className="template-grid">{templates.map((template, i) => <button key={template.id} className={`template-option ${selected === i ? 'selected' : ''}`} onClick={() => { setSelected(i); setPageIndex(0); }} aria-pressed={selected === i} aria-label={template.name}>
-            <div className="mini-card" style={{background: template.bg}}>{ready && <Story template={template} page={paginate(sample, !!activePortrait)[0]} index={0} count={1} phone={phone} portrait={activePortrait} thumbnail/>}{selected === i && <span className="selected-badge"><Check size={11}/></span>}</div><strong>{template.name}</strong><span>{template.mood}</span>
+            <div className="mini-card" style={{background: template.bg}}>{thumbnailPage && <Story template={template} page={thumbnailPage} index={0} count={1} phone={phone} portrait={activePortrait} thumbnail/>}{selected === i && <span className="selected-badge"><Check size={11}/></span>}</div><strong>{template.name}</strong><span>{template.mood}</span>
           </button>)}</div>
           <div className="options"><label><input type="checkbox" checked={phone} onChange={e => setPhone(e.target.checked)}/> Include phone number</label>{portrait ? <label><input type="checkbox" checked={showPortrait} onChange={e => setShowPortrait(e.target.checked)}/> Include portrait</label> : <label className="portrait-upload"><ImagePlus size={15}/> Add teacher portrait<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => choosePortrait(e.target.files?.[0])}/></label>}</div>
           <button className="download-button" onClick={download} disabled={!ready || !text.trim() || downloading}><ArrowDownToLine size={18}/>{downloading ? 'Preparing your stories…' : pages.length > 1 ? `Download ${pages.length} PNG images` : 'Download PNG'}<ArrowRight size={17}/></button>

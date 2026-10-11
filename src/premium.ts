@@ -63,7 +63,7 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
     for(const x of [174,906]){line(c,x,261,x,666,'#a99269');line(c,x-20,285,x+20,285,accent);line(c,x-20,642,x+20,642,accent);}
     text(c,'Beyond the ordinary.',540,800,86,ink);
     box(c,99,852,882,789,'#0b2232e8');frame(c,99,852,882,789,accent);frame(c,111,864,858,765,'#5f766e');top=867;
-  }else{
+  }else if(id==='premium-gallery'){
     box(c,0,0,1080,1920,gradient(c,'#4d594d','#17251f'));stone(c,.26);
     box(c,46,47,988,716,'#17241ff2');
     text(c,'THE PRIVATE GALLERY',92,121,19,accent,false,'left',4);text(c,'01',984,121,21,accent,false,'right');
@@ -74,6 +74,27 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
     text(c,'REAL STORIES. LASTING CONFIDENCE.',540,804,18,ink,false,'center',3);
     c.save();c.shadowColor='#00000050';c.shadowBlur=30;c.shadowOffsetY=20;box(c,82,846,916,799,'#ded9c8',4);c.restore();
     frame(c,103,867,874,757,'#b9b39d',2);bodyInk='#293b2e';top=869;
+  }else{
+    box(c,0,0,1080,1920,gradient(c,'#173e3e','#071d23'));stone(c,.12);
+    // Golden mathematical notation surrounds the portrait; feedback has its own quiet panel.
+    c.save();c.globalAlpha=.16;
+    for(let x=40;x<1080;x+=60)line(c,x,0,x,790,'#8cad98');
+    for(let y=10;y<790;y+=60)line(c,0,y,1080,y,'#8cad98');
+    c.restore();
+    text(c,'TIMAA AL GHOUL',540,118,69,ink);
+    text(c,'MATHEMATICS TEACHER',540,167,20,accent,false,'center',5);
+    portrait(c,p,610,244,332,447,accent);
+    text(c,'π',167,343,117,accent);text(c,'∑',345,340,99,accent);text(c,'√',447,344,108,accent);
+    text(c,'x² + y² = r²',106,459,53,ink,true,'left');
+    text(c,'y = mx + b',106,527,52,accent,true,'left');
+    text(c,'a² + b² = c²',106,595,49,ink,true,'left');
+    c.strokeStyle=accent;c.lineWidth=2;c.beginPath();c.moveTo(114,714);c.lineTo(254,714);c.lineTo(114,620);c.closePath();c.stroke();
+    line(c,114,699,129,699,accent);line(c,129,699,129,714,accent);
+    text(c,'a',96,674,22,accent);text(c,'b',184,744,22,accent);text(c,'c',210,660,22,accent);
+    text(c,'More than numbers.',662,788,76,ink);
+    box(c,82,848,916,800,'#f0e5d0',22);frame(c,82,848,916,800,accent,22);frame(c,99,865,882,766,'#b9a57e',12);
+    bodyInk='#143330';top=867;
+    text(c,'∞',943,1754,58,accent);text(c,'π ≈ 3.14159',154,1732,25,accent);
   }
   const spacing=page.size*1.72;const start=top+(760-page.lines.length*spacing)/2;
   c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle=bodyInk;

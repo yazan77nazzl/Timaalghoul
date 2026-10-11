@@ -14,7 +14,7 @@ try {
   await page.getByRole('textbox', { name: 'Feedback' }).fill(arabic);
   await page.waitForTimeout(100);
   const names = await page.evaluate(async () => (await import('/src/renderer.ts')).templates.map(t => t.name));
-  assert.equal(names.length, 16);
+  assert.equal(names.length, 17);
   for (const name of names) {
     await page.getByRole('button', { name, exact: true }).click();
     await page.waitForTimeout(80);

@@ -18,6 +18,7 @@ export const templates = [
   { id: 'premium-champagne', name: 'Champagne Atelier', mood: 'Warm silk, sculpted bronze', bg: '#bc9a76', ink: '#f8e8d0', accent: '#594433' },
   { id: 'premium-royal', name: 'Royal Geometry', mood: 'Art deco, sapphire & brass', bg: '#10283c', ink: '#f2dfb5', accent: '#c3a065' },
   { id: 'premium-gallery', name: 'The Private Gallery', mood: 'Architectural, quietly refined', bg: '#26312c', ink: '#f0e5d2', accent: '#baaa86' },
+  { id: 'premium-mathematics', name: 'Mathematics Atelier', mood: 'Golden equations, geometric elegance', bg: '#0b292a', ink: '#f4e7c9', accent: '#d2ae70' },
 ] as const;
 export type Template = typeof templates[number];
 export type StoryPage = { lines: string[]; size: number; rtl: boolean };
