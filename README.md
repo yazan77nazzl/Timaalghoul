@@ -27,5 +27,7 @@ npm test
 
 Tests use installed Google Chrome through Playwright. The browser checks validate Arabic and English PNG downloads, exact canvas/export equality, all twenty-three templates, multi-page preservation and downloads, portrait rendering, full-frame sizing for large and small images, unobscured left artwork, and mobile layout. Test artifacts are written to the ignored `test-results` directory.
 
+Run `node scripts/test-alignment.mjs` for pixel-based centering checks using Arabic, English, mixed text, punctuation, and emoji. Feedback uses measured widths and left anchors to avoid reliance on Canvas center alignment. WebKit documented a center-alignment issue with complex-shaped text in its [Safari Technology Preview 246 release notes](https://webkit.org/blog/18128/release-notes-for-safari-technology-preview-246/). The application requires no Windows components. This check uses installed Chrome; direct testing on an iPhone remains separate.
+
 
 

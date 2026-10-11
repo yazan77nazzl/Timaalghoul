@@ -1,5 +1,6 @@
 import type { StoryPage, Template } from './renderer';
 import { drawPortraitCover } from './portrait';
+import { drawFeedback } from './feedback';
 
 type C = CanvasRenderingContext2D;
 let marble: HTMLImageElement | undefined;
@@ -111,9 +112,7 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
     bodyInk='#143330';top=867;
     text(c,'∞',943,1754,58,accent);text(c,'π ≈ 3.14159',154,1732,25,accent);
   }
-  const spacing=page.size*1.72;const start=top+(760-page.lines.length*spacing)/2;
-  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle=bodyInk;
-  page.lines.forEach((s,i)=>c.fillText(s,540,start+spacing*(i+.5)));
+  drawFeedback(c,page,bodyInk,top);
   if(id!=='premium-maison')line(c,452,1693,628,1693,id==='premium-champagne'?'#624831':accent);
   text(c,'Timaa Al Ghoul',540,1767,66,footerInk);
   text(c,'MATHEMATICS TEACHER',540,1811,18,id==='premium-champagne'?'#4b3929':accent,false,'center',4);
@@ -139,9 +138,7 @@ function drawSignature(c:C,page:StoryPage,index:number,count:number,phone:boolea
   const vellum=c.createLinearGradient(103,788,980,1708);vellum.addColorStop(0,'#fff5df');vellum.addColorStop(.45,'#f6e9d4');vellum.addColorStop(1,'#d9bd94');
   box(c,103,788,874,920,vellum,[103,103,65,65]);frame(c,111,796,858,904,'#fff8e8',[96,96,57,57]);
   text(c,'“',176,909,146,'#9f773d');text(c,'PARENT & STUDENT FEEDBACK',586,862,31,'#3a2e1e');line(c,511,896,639,896,'#9a7139');
-  const spacing=page.size*1.72;const start=924+(760-page.lines.length*spacing)/2;
-  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#28231c';
-  page.lines.forEach((s,i)=>c.fillText(s,540,start+spacing*(i+.5)));
+  drawFeedback(c,page,'#28231c',924);
   if(phone){box(c,357,1750,665,122,'#101918e8',22);frame(c,357,1750,665,122,'#91774c',22);text(c,'☎',419,1831,42,'#dbb57c',false);text(c,'0537859118',690,1833,62,'#f0ce93');}
   text(c,'EVERY STUDENT HAS A BRIGHTER FUTURE',665,1905,13,'#f1e2c9',false,'center',2);
   if(count>1)text(c,`${index+1} / ${count}`,115,1892,16,'#f1d7aa',false,'left');
@@ -200,9 +197,7 @@ function drawLeftCollection(c:C,t:Template,page:StoryPage,index:number,count:num
     // Portrait fills its reserved column; left artwork remains unobscured.
   portrait(c,p,620,140,354,556,accent);
   text(c,'PARENT & STUDENT FEEDBACK',796,789,16,accent,false,'center',1);
-  const spacing=page.size*1.72;const start=bodyTop+(760-page.lines.length*spacing)/2;
-  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle=bodyInk;
-  page.lines.forEach((s,i)=>c.fillText(s,540,start+spacing*(i+.5)));
+  drawFeedback(c,page,bodyInk,bodyTop);
   line(c,451,1710,629,1710,accent);text(c,'Timaa Al Ghoul',540,1780,67,ink);
   text(c,'MATHEMATICS TEACHER',540,1825,18,accent,false,'center',4);
   if(phone)text(c,'0537859118',540,1859,23,ink,false);

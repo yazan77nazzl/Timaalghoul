@@ -1,6 +1,7 @@
 import type { StoryPage, Template } from './renderer';
 import { drawPremium, loadPremiumAssets } from './premium';
 import { drawPortraitCover } from './portrait';
+import { drawFeedback } from './feedback';
 
 type Context = CanvasRenderingContext2D;
 let studyBackground: HTMLImageElement | undefined;
@@ -126,10 +127,7 @@ export function drawStory(canvas: HTMLCanvasElement, t: Template, page: StoryPag
     star(c,540,1668,14,'#cfb47a');
   }
   // Body bounds are identical across templates; headers and photos never compete with feedback.
-  const spacing=page.size*1.72;
-  const start=textTop+(area-page.lines.length*spacing)/2;
-  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle=textInk;
-  page.lines.forEach((text,i)=>c.fillText(text,540,start+spacing*(i+.5)));
+  drawFeedback(c,page,textInk,textTop,area);
   type(c,'Timaa Al Ghoul',540,1757,69,id==='terracotta'?'#653d31':ink);
   type(c,'MATHEMATICS TEACHER',540,1804,18,id==='terracotta'?'#9c7052':accent,false,'center',true);
   if(phone)type(c,'0537859118',540,1852,23,id==='terracotta'?'#653d31':ink,false);
@@ -174,9 +172,7 @@ function drawGoldenStory(c: Context, t: Template, page: StoryPage, index: number
   type(c,'“',174,901,152,'#a77a3b');type(c,'PARENT & STUDENT FEEDBACK',573,858,31,'#382d20');
   rule(c,505,892,635,892,'#a77a3b');
   // Keep the same measured text width and capacity as every other template.
-  const spacing=page.size*1.72;const start=914+(760-page.lines.length*spacing)/2;
-  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#201e1a';
-  page.lines.forEach((text,i)=>c.fillText(text,540,start+spacing*(i+.5)));
+  drawFeedback(c,page,'#201e1a',914);
   // Edge foliage stays outside the feedback's measured column.
   leaf(c,1010,1460,91,'#bf9e68',.65);leaf(c,1040,1533,100,'#bf9e68',-.25);
   rect(c,333,1727,676,165,'#0c181ce8',20);
