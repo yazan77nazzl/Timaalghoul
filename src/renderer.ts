@@ -19,6 +19,7 @@ export const templates = [
   { id: 'premium-royal', name: 'Royal Geometry', mood: 'Art deco, sapphire & brass', bg: '#10283c', ink: '#f2dfb5', accent: '#c3a065' },
   { id: 'premium-gallery', name: 'The Private Gallery', mood: 'Architectural, quietly refined', bg: '#26312c', ink: '#f0e5d2', accent: '#baaa86' },
   { id: 'premium-mathematics', name: 'Mathematics Atelier', mood: 'Golden equations, geometric elegance', bg: '#0b292a', ink: '#f4e7c9', accent: '#d2ae70' },
+  { id: 'premium-math-signature', name: 'Mathematics Privé', mood: 'Sculptural brass, cinematic luxury', bg: '#111615', ink: '#f3d8ab', accent: '#d0a66b' },
 ] as const;
 export type Template = typeof templates[number];
 export type StoryPage = { lines: string[]; size: number; rtl: boolean };

@@ -2,13 +2,19 @@ import type { StoryPage, Template } from './renderer';
 
 type C = CanvasRenderingContext2D;
 let marble: HTMLImageElement | undefined;
-export function loadPremiumAssets(): Promise<void> {
-  return new Promise(resolve => {
+let signature: HTMLImageElement | undefined;
+export async function loadPremiumAssets(): Promise<void> {
+  await Promise.all([new Promise<void>(resolve => {
     const image = new Image();
     image.onload = () => { marble = image; resolve(); };
     image.onerror = () => resolve();
     image.src = `${import.meta.env.BASE_URL}assets/obsidian-marble.png`;
-  });
+  }), new Promise<void>(resolve => {
+    const image = new Image();
+    image.onload = () => { signature = image; resolve(); };
+    image.onerror = () => resolve();
+    image.src = `${import.meta.env.BASE_URL}assets/mathematics-prive.png`;
+  })]);
 }
 function box(c: C, x: number, y: number, w: number, h: number, color: string | CanvasGradient, r: number | number[] = 0) { c.fillStyle=color;c.beginPath();c.roundRect(x,y,w,h,r);c.fill(); }
 function frame(c: C, x: number, y: number, w: number, h: number, color: string, r: number | number[]=0) {c.strokeStyle=color;c.lineWidth=2;c.beginPath();c.roundRect(x,y,w,h,r);c.stroke();}
@@ -25,6 +31,10 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
   const {id,ink,accent}=t;
   let bodyInk:string=ink;let top=866;let footerInk:string=ink;
   box(c,0,0,1080,1920,t.bg);
+  if(id==='premium-math-signature'){
+    drawSignature(c,page,index,count,phone,p);
+    return;
+  }
   if(id==='premium-obsidian'){
     stone(c);box(c,0,0,1080,1920,gradient(c,'#101a1760','#0b1211bd'));
     frame(c,47,47,986,1826,'#b9995b');
@@ -104,4 +114,30 @@ export function drawPremium(c:C,t:Template,page:StoryPage,index:number,count:num
   text(c,'MATHEMATICS TEACHER',540,1811,18,id==='premium-champagne'?'#4b3929':accent,false,'center',4);
   if(phone)text(c,'0537859118',540,1857,23,footerInk,false);
   if(count>1)text(c,`${index+1} / ${count}`,969,1898,16,footerInk,false,'right');
+}
+
+function drawSignature(c:C,page:StoryPage,index:number,count:number,phone:boolean,p?:HTMLImageElement){
+  if(signature){const scale=Math.max(1080/signature.naturalWidth,1920/signature.naturalHeight);const w=signature.naturalWidth*scale,h=signature.naturalHeight*scale;c.drawImage(signature,(1080-w)/2,(1920-h)/2,w,h);}
+  const shade=c.createLinearGradient(0,0,640,0);shade.addColorStop(0,'#071014ef');shade.addColorStop(.78,'#071014e0');shade.addColorStop(1,'#07101400');
+  c.fillStyle=shade;c.beginPath();c.moveTo(0,0);c.lineTo(638,0);c.bezierCurveTo(478,195,506,552,617,778);c.lineTo(0,820);c.closePath();c.fill();
+  c.strokeStyle=gradient(c,'#f5dba0','#947041',510,0,630,790);c.lineWidth=3;c.beginPath();c.moveTo(638,0);c.bezierCurveTo(478,195,506,552,617,778);c.stroke();
+  text(c,'THE MATHEMATICS COLLECTION',72,105,17,'#d2b17a',false,'left',3);
+  text(c,'TIMAA',68,275,121,'#f2d5a3',true,'left');text(c,'AL GHOUL',71,375,82,'#f2d5a3',true,'left');
+  text(c,'MATHEMATICS TEACHER',74,437,18,'#eee7da',false,'left',3);line(c,74,481,304,481,'#d8b27a');
+  text(c,'The beauty',77,575,65,'#d8b27a',true,'left');text(c,'of mathematics.',77,648,66,'#d8b27a',true,'left');
+  text(c,'x² + y² = r²',81,726,26,'#d7bf94',true,'left');
+  // Without a portrait, the original brass sculpture background stays visible.
+  if(p)portrait(c,p,629,139,369,503,'#c3a16b');
+  c.save();c.shadowColor='#00000090';c.shadowBlur=45;c.shadowOffsetY=24;
+  const metal=c.createLinearGradient(96,781,986,1720);metal.addColorStop(0,'#f7dfab');metal.addColorStop(.3,'#ba8845');metal.addColorStop(.6,'#f2d8a2');metal.addColorStop(1,'#92622b');
+  box(c,96,781,888,934,metal,[110,110,72,72]);c.restore();
+  const vellum=c.createLinearGradient(103,788,980,1708);vellum.addColorStop(0,'#fff5df');vellum.addColorStop(.45,'#f6e9d4');vellum.addColorStop(1,'#d9bd94');
+  box(c,103,788,874,920,vellum,[103,103,65,65]);frame(c,111,796,858,904,'#fff8e8',[96,96,57,57]);
+  text(c,'“',176,909,146,'#9f773d');text(c,'PARENT & STUDENT FEEDBACK',586,862,31,'#3a2e1e');line(c,511,896,639,896,'#9a7139');
+  const spacing=page.size*1.72;const start=924+(760-page.lines.length*spacing)/2;
+  c.font=`${page.size}px ${page.rtl?'Amiri':'"DM Sans"'}`;c.direction=page.rtl?'rtl':'ltr';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#28231c';
+  page.lines.forEach((s,i)=>c.fillText(s,540,start+spacing*(i+.5)));
+  if(phone){box(c,357,1750,665,122,'#101918e8',22);frame(c,357,1750,665,122,'#91774c',22);text(c,'☎',419,1831,42,'#dbb57c',false);text(c,'0537859118',690,1833,62,'#f0ce93');}
+  text(c,'EVERY STUDENT HAS A BRIGHTER FUTURE',665,1905,13,'#f1e2c9',false,'center',2);
+  if(count>1)text(c,`${index+1} / ${count}`,115,1892,16,'#f1d7aa',false,'left');
 }
